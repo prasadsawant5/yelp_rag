@@ -1,0 +1,6 @@
+yelp_academic*.json
+__pycache__/*
+__pycache__
+.VS_code/
+.vs_code/
+.idea/

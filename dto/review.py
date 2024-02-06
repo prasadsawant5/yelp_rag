@@ -6,7 +6,7 @@ class Review:
     review_id: str
     user_id: str
     business_id: str
-    stars: str
+    stars: int
     date: date
     text: str
     useful: int

@@ -15,4 +15,10 @@ class Business:
     review_count: float
     is_open: bool
     categories: List[str]
-    hours: dict
+    monday_hours: str
+    tuesday_hours: str
+    wednesday_hours: str
+    thursday_hours: str
+    friday_hours: str
+    satday_hours: str
+    sunday_hours: str

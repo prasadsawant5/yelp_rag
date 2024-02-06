@@ -15,13 +15,14 @@ class User:
     fans: int
     elite: List[int]
     average_stars: float
-    compliment_more: float
-    compliment_profile: float
-    compliment_cute: float
-    compliment_list: float
-    compliment_note: float
-    compliment_plain: float
-    compliment_cool: float
-    compliment_funny: float
-    compliment_writer: float
-    compliment_photos: float
+    compliment_hot: int
+    compliment_more: int
+    compliment_profile: int
+    compliment_cute: int
+    compliment_list: int
+    compliment_note: int
+    compliment_plain: int
+    compliment_cool: int
+    compliment_funny: int
+    compliment_writer: int
+    compliment_photos: int

@@ -1,6 +1,7 @@
 import psycopg2
 import json
 from tqdm import tqdm
+from utils import *
 
 FILES = [
     'yelp_academic_dataset_business.json', 
@@ -27,7 +28,7 @@ def fix_parse_errors_in_json(file: str):
 
             lines[i] = line
 
-        lines[-1] = lines[-1] + ']'
+        lines[-1] = lines[-1].replace(', \n', ']')
 
         f.writelines(lines)
             
@@ -116,7 +117,7 @@ def create_tables(conn: psycopg2.extensions.connection, cursor: psycopg2.extensi
     try:
         for i in tqdm(range(0, len(tables))):
             cursor.execute(tables[i])
-        # conn.commit()
+        conn.commit()
         print('*' * 30, end='')
         print(' Tables Created ', end='')
         print('*' * 30)
@@ -126,8 +127,8 @@ def create_tables(conn: psycopg2.extensions.connection, cursor: psycopg2.extensi
 
 
 if __name__ == '__main__':
-    # for f in FILES:
-    #     fix_parse_errors_in_json(f)
+    for f in FILES:
+        fix_parse_errors_in_json(f)
 
     print('*' * 25, end='')
     print(' JSON files fixed ', end='')
@@ -143,6 +144,10 @@ if __name__ == '__main__':
 
     for i in tqdm(range(0, len(businesses))):
         b = businesses[i]
+        biz = convert_to_business_dto(b)
+        query = create_insert_business_query(biz)
+        print(query)
+        break
 
     cursor.close()
     conn.close()

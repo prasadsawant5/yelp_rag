@@ -25,9 +25,12 @@ def convert_to_business_dto(d: dict) -> Business:
 
 def convert_to_user_dto(d: dict) -> User:
     try:
+        elites = None
+        if d['elite'] != None:
+            elites = [int(f) for f in d['elites']]
         return User(
             d['user_id'], d['name'], d['review_count'], d['yelping_since'], d['friends'].split(',') if d['friends'] != None else None, d['useful'], d['funny'], d['cool'], d['fans'], 
-            d['elite'].split(',') if d['elite'] != None else None, d['average_stars'], d['compliment_hot'], d['compliment_more'], d['compliment_profile'], d['compliment_cute'],d['compliment_list'], d['compliment_note'], 
+            elites, d['average_stars'], d['compliment_hot'], d['compliment_more'], d['compliment_profile'], d['compliment_cute'],d['compliment_list'], d['compliment_note'], 
             d['compliment_plain'], d['compliment_cool'], d['compliment_funny'], d['compliment_writer'], d['compliment_photos']
         )
     except KeyError as e:
@@ -71,9 +74,21 @@ def create_insert_business_query(biz: Business) -> str:
         print()
 
 def create_insert_user_query(usr: User) -> str:
+    if usr == None:
+        return None
+    friends_list = 'null'
+    if usr.friends != None and len(usr.friends) > 0:
+        friends_list = 'ARRAY[' + get_categories(usr.friends) + ']'
+
+    elites = 'null'
+    if usr.elite != None and len(usr.elite) > 0:
+        print(f'{usr.elite} Len: {len(usr.elite)}')
+        elites = 'INTEGER[' + get_elites(usr.elite) + ']'
+
     return f'''
         INSERT INTO users (user_id, name, review_count, yelping_since, friends, useful, funny, cool, fans, elite, average_stars, compliment_hot, compliment_more, compliment_profile, compliment_cute, compliment_list, compliment_note, compliment_plain, compliment_cool, compliment_funny, compliment_writer, compliment_photos) 
-        VALUES ('{usr.user_id}', '{usr.name.replace("'", "")}', {usr.review_count}, '{usr.yelping_since}', ARRAY[{get_categories(usr.friends)}], {usr.useful}, {usr.funny}, {usr.cool}, {usr.fans}, ARRAY[{get_categories(usr.elite)}], {usr.average_stars}, {usr.compliment_hot}, {usr.compliment_more}, {usr.compliment_profile}, {usr.compliment_cute}, {usr.compliment_list}, 
+        VALUES ('{usr.user_id}', '{usr.name.replace("'", "")}', {usr.review_count}, '{usr.yelping_since}', {friends_list}, {usr.useful}, {usr.funny}, {usr.cool}, {usr.fans}, 
+        {elites}, {usr.average_stars}, {usr.compliment_hot}, {usr.compliment_more}, {usr.compliment_profile}, {usr.compliment_cute}, {usr.compliment_list}, 
         {usr.compliment_note}, {usr.compliment_plain}, {usr.compliment_cool}, {usr.compliment_funny}, {usr.compliment_writer}, {usr.compliment_photos})
     '''
 
@@ -102,4 +117,12 @@ def get_categories(categories: List[str]) -> str:
             if i != len(categories) - 1:
                 s += ', '
 
+    return s
+
+def get_elites(elites: List[int]) -> str:
+    s = ''
+    for i in range(0, len(elites)):
+        s += elites[i]
+        if i != len(elites) - 1:
+            s += ', '
     return s

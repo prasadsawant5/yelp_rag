@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-import datetime
+from typing import List
 
 @dataclass
 class Checkin:
     business_id: str
-    date: datetime
+    date: List[str]

@@ -27,7 +27,15 @@ def convert_to_user_dto(d: dict) -> User:
     try:
         elites = None
         if d['elite'] != None:
-            elites = [int(f) for f in d['elites']]
+            arr = d['elite'].split(',')
+            for a in arr:
+                try:
+                    e = int(a)
+                    if elites == None:
+                        elites = []
+                    elites.append(e)
+                except ValueError as v:
+                    elites = None
         return User(
             d['user_id'], d['name'], d['review_count'], d['yelping_since'], d['friends'].split(',') if d['friends'] != None else None, d['useful'], d['funny'], d['cool'], d['fans'], 
             elites, d['average_stars'], d['compliment_hot'], d['compliment_more'], d['compliment_profile'], d['compliment_cute'],d['compliment_list'], d['compliment_note'], 
@@ -47,18 +55,11 @@ def convert_to_tip_dto(d: dict) -> Tip:
         d['text'], d['date'], d['compliment_count'], d['business_id'], d['user_id']
     )
 
-def convert_to_checkin_dto(d: dict) -> List[Checkin]:
-    dates = d['date'].split(',')
+def convert_to_checkin_dto(d: dict) -> Checkin:
     biz_id = d['business_id']
-    checkins = []
+    dates = [(d.lstrip()).rstrip() for d in d['date'].split(',')]
 
-    for d in dates:
-        d = d.lstrip()
-        d = d.rstrip()
-        dt = datetime.strptime(d, '%Y-%m-%d %H:%M:%S')
-        checkins.append(Checkin(biz_id, dt))
-
-    return checkins
+    return Checkin(biz_id, dates)
 
 def create_insert_business_query(biz: Business) -> str:
     try:
@@ -81,9 +82,8 @@ def create_insert_user_query(usr: User) -> str:
         friends_list = 'ARRAY[' + get_categories(usr.friends) + ']'
 
     elites = 'null'
-    if usr.elite != None and len(usr.elite) > 0:
-        print(f'{usr.elite} Len: {len(usr.elite)}')
-        elites = 'INTEGER[' + get_elites(usr.elite) + ']'
+    if usr.elite != None and len(usr.elite) > 0 and usr.elite[0] != '':
+        elites = 'ARRAY[' + get_elites(usr.elite) + ']'
 
     return f'''
         INSERT INTO users (user_id, name, review_count, yelping_since, friends, useful, funny, cool, fans, elite, average_stars, compliment_hot, compliment_more, compliment_profile, compliment_cute, compliment_list, compliment_note, compliment_plain, compliment_cool, compliment_funny, compliment_writer, compliment_photos) 
@@ -99,8 +99,11 @@ def create_insert_review_query(r: Review) -> str:
     '''
 
 def create_insert_checkin_query(c: Checkin) -> str:
+    dates = 'null'
+    if c.date != None and len(c.date) > 0:
+        dates = 'ARRAY[' + get_checkin_timestamp(c.date) + ']'
     return f'''
-        INSERT INTO checkins (business_id, date) VALUES ('{c.business_id}', '{c.date}')
+        INSERT INTO checkins (business_id, date) VALUES ('{c.business_id}', {dates})
     '''
 
 def create_insert_tip_query(tip: Tip) -> str:
@@ -119,10 +122,20 @@ def get_categories(categories: List[str]) -> str:
 
     return s
 
+def get_checkin_timestamp(categories: List[str]) -> str:
+    s = ''
+    if categories != None:
+        for i in range(0, len(categories)):
+            s += '\'' + categories[i].replace("'", "") + '\'::timestamp'
+            if i != len(categories) - 1:
+                s += ', '
+
+    return s
+
 def get_elites(elites: List[int]) -> str:
     s = ''
     for i in range(0, len(elites)):
-        s += elites[i]
+        s += str(elites[i])
         if i != len(elites) - 1:
             s += ', '
     return s

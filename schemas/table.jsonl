@@ -2,5 +2,4 @@
 { "dataset_name": "yelp", "table_name": "users", "description": "The `users` table captures comprehensive information about various users that have registered on Yelp." }
 { "dataset_name": "yelp", "table_name": "reviews", "description": "The `reviews` table captures information about a review posted by a user on a business." }
 { "dataset_name": "yelp", "table_name": "tips", "description": "The `tips` table captures information about various tips written by a user on a business. Tips are shorter than reviews and tend to convey quick suggestions." }
-{ "dataset_name": "yelp", "table_name": "checkins", "description": "The `checkins` table captures comprehensive information about checkins on a business. The checkin information contains the date and timestamp of the checkin." }
-
+{ "dataset_name": "yelp", "table_name": "checkins", "description": "The `checkins` table captures comprehensive information about checkins on a business. The checkin information contains the timestamp of the checkin." }

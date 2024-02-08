@@ -6,11 +6,11 @@ from utils import *
 from config import *
 
 FILES = [
-    # 'yelp_academic_dataset_business.json', 
+    'yelp_academic_dataset_business.json', 
     'yelp_academic_dataset_user.json',
-    # 'yelp_academic_dataset_checkin.json', 
-    # 'yelp_academic_dataset_review.json', 
-    # 'yelp_academic_dataset_tip.json', 
+    'yelp_academic_dataset_checkin.json', 
+    'yelp_academic_dataset_review.json', 
+    'yelp_academic_dataset_tip.json', 
 ]
 
 def fix_parse_errors_in_json(file: str):
@@ -34,8 +34,6 @@ def fix_parse_errors_in_json(file: str):
                 line = line.replace('\n', ', \n')
 
             lines[i] = line
-
-        # lines[-1] = lines[-1].replace(', \n', ']')
 
         f.writelines(lines)
             
@@ -76,8 +74,8 @@ def execute_query(query: str, conn: psycopg2.extensions.connection, cursor: psyc
 
 
 if __name__ == '__main__':
-    # for f in FILES:
-    #     fix_parse_errors_in_json(f)
+    for f in FILES:
+        fix_parse_errors_in_json(f)
 
     print('*' * 29, end='')
     print(' JSON files fixed ', end='')
@@ -104,31 +102,22 @@ if __name__ == '__main__':
                     user = convert_to_user_dto(usr)
                     query = create_insert_user_query(user)
                     execute_query(query, conn, cursor)
-                    # print(query)
-                    # break
-                # elif '_review' in file:
-                #     r = data[i]
-                #     review = convert_to_review_dto(r)
-                #     query = create_insert_review_query(review)
-                #     execute_query(query, conn, cursor)
-                #     # print(query)
-                #     # break
-                # elif '_checkin' in file:
-                #     c = data[i]
-                #     checkin = convert_to_checkin_dto(c)
-                #     for _c in checkin:
-                #         query = create_insert_checkin_query(_c)
-                #         cursor.execute(query)
-                #         conn.commit()
-                #     #     print(query)
-                #     # break
-                # else:
-                #     t = data[i]
-                #     tip = convert_to_tip_dto(t)
-                #     query = create_insert_tip_query(tip)
-                #     execute_query(query, conn, cursor)
-                #     # print(query)
-                #     # break
+                elif '_review' in file:
+                    r = data[i]
+                    if r['user_id'] not in ABSENT_ENTITIES and r['business_id'] not in ABSENT_ENTITIES:
+                        review = convert_to_review_dto(r)
+                        query = create_insert_review_query(review)
+                        execute_query(query, conn, cursor)
+                elif '_checkin' in file:
+                    c = data[i]
+                    checkin = convert_to_checkin_dto(c)
+                    query = create_insert_checkin_query(checkin)
+                    execute_query(query, conn, cursor)
+                else:
+                    t = data[i]
+                    tip = convert_to_tip_dto(t)
+                    query = create_insert_tip_query(tip)
+                    execute_query(query, conn, cursor)
             
             f.close()
         except json.decoder.JSONDecodeError as e:

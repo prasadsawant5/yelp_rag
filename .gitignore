@@ -4,3 +4,5 @@ __pycache__
 .VS_code/
 .vs_code/
 .idea/
+model/
+llm-study-*.json

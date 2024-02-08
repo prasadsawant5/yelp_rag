@@ -1,6 +1,7 @@
 DATABASE_NAME='yelp'
 USERNAME='prasad'
 PASSWORD='password'
+HF_API_TOKEN='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'
 
 TABLES = (
     '''

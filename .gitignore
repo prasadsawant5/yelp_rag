@@ -6,3 +6,4 @@ __pycache__
 .idea/
 model/
 llm-study-*.json
+.ipynb_checkpoints/*
